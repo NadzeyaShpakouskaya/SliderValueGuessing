@@ -9,10 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var currentValue: Double = 0.5
-    @State private var targetValue: Int = 70
-    @State private var opacity: Double = 1.0
-    
+    @State private var currentValue = 0.5
+    @State private var targetValue = 70
     @State private var isAlertPresenting =  false
     
     var body: some View {
@@ -25,6 +23,12 @@ struct ContentView: View {
     
     private func restartGame() {
         targetValue = Int.random(in: 0...100)
+    }
+    
+    
+    private func defineOpacity() -> Double {
+        let diff = abs(targetValue - lround(currentValue * 100))
+        return 1 - Double(diff) / Double(100)
     }
 }
 
@@ -44,8 +48,7 @@ extension ContentView {
             
             UIKitSliderView(
                 value: $currentValue,
-                targetValue: $targetValue,
-                opacity: $opacity
+                opacity: defineOpacity()
             )
                 .onChange(of: currentValue) { newValue in
                     currentValue = newValue
@@ -60,7 +63,7 @@ extension ContentView {
             Button(action: { isAlertPresenting.toggle() }) {
                 Text("Check my guessing")
             }
-            .alert(Text("Your are \(lround(opacity * 100))% right."),
+            .alert(Text("Your are \(lround(defineOpacity() * 100))% right."),
                    isPresented: $isAlertPresenting) {}
             
             Button(action: restartGame) {
